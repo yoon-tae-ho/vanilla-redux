@@ -1,5 +1,7 @@
 import { createStore } from "redux";
 
+const LS_KEY = "state";
+
 const ADD = "ADD";
 const DELETE = "DELETE";
 
@@ -18,12 +20,21 @@ const deleteToDo = (id) => {
   };
 };
 
-const reducer = (state = [], action) => {
+const reducer = (
+  state = JSON.parse(localStorage.getItem(LS_KEY)) || [],
+  action
+) => {
   switch (action.type) {
     case ADD:
-      return [{ text: action.text, id: action.id }, ...state];
+      const addedState = [{ text: action.text, id: action.id }, ...state];
+      localStorage.setItem(LS_KEY, JSON.stringify(addedState));
+      return addedState;
     case DELETE:
-      return state.filter((toDo) => String(toDo.id) !== String(action.id));
+      const deletedState = state.filter(
+        (toDo) => String(toDo.id) !== String(action.id)
+      );
+      localStorage.setItem(LS_KEY, JSON.stringify(deletedState));
+      return deletedState;
     default:
       return state;
   }
